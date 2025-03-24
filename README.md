@@ -17,7 +17,7 @@ For texting, we'll keep it simple and send it through email via carrier SMS gate
 
 ### execution
 
-The bin will take the email as a parameter as well as the gmail application key for sending email
+The bin will take the email as a parameter as well as the gmail application key for sending email.
 
 `lunch foo@txt.att.net abcdefg`
 
@@ -25,4 +25,4 @@ the intent is to use this with a cron that runs M-F like this:
 
 `0 6 * * 1-5 lunch foo@txt.att.net abcdefg`
 
-...assuming lunch is a bin in /usr/bin
+...assuming lunch is a bin in the path

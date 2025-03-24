@@ -12,8 +12,6 @@ import (
 	"time"
 )
 
-var API_URL = "https://api.mealviewer.com/api/v4/school/Bryant/02-23-2025/04-05-2025/0"
-
 // structure of the API response:
 /**
 {
@@ -80,11 +78,8 @@ type FoodItem struct {
 }
 
 func main() {
-	fmt.Println("Hello world")
-
 	args := os.Args
 
-	log.Printf("arg lengh: %d", len(args))
 	if (len(args) > 3) || (len(args) < 3) {
 		log.Fatal("Expected format: 'lunch <email> <apikey>'")
 	}
@@ -100,7 +95,7 @@ func main() {
 
 	menuString, err := getMenu(today)
 	if err != nil {
-		log.Fatalf("got an error: %s\n", err)
+		log.Fatalf("Failed to get menu: %s\n", err)
 	}
 	log.Printf("THE MESSAGE:\n%s", menuString)
 	send(apikey, email, menuString)
@@ -111,7 +106,7 @@ func send(pass string, email string, body string) {
 	from := "stockbauer@gmail.com"
 	msg := "From: " + from + "\n" +
 		"To: " + email + "\n" +
-		"Subject: today's lunch\n\n" +
+		"Subject: today's menu\n\n" +
 		body
 
 	err := smtp.SendMail("smtp.gmail.com:587",
@@ -121,7 +116,6 @@ func send(pass string, email string, body string) {
 	if err != nil {
 		log.Fatalf("smtp error: %s", err)
 	}
-
 }
 
 func getMenu(dateString string) (string, error) {
@@ -155,7 +149,6 @@ func getMenu(dateString string) (string, error) {
 	}
 
 	return parseMenu(menu), nil
-
 }
 
 func parseMenu(menu Menu) string {
