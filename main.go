@@ -6,10 +6,11 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/smtp"
 	"os"
-	"strings"
+	"strconv"
 	"time"
+
+	simplesms "github.com/trriplejay/simple-sms-go"
 )
 
 // structure of the API response:
@@ -80,15 +81,22 @@ type FoodItem struct {
 func main() {
 	args := os.Args
 
-	if (len(args) > 3) || (len(args) < 3) {
-		log.Fatal("Expected format: 'lunch <email> <apikey>'")
+	if (len(args) > 4) || (len(args) < 4) {
+		log.Fatal("Expected format: 'lunch <phone_number> <provider_string> <apikey>'")
 	}
 
-	email := args[1]
-	apikey := args[2]
+	phone := args[1]
+	provider := args[2]
+	apikey := args[3]
 
-	if !strings.Contains(email, "@") {
-		log.Fatal("You appear to have provided an invalid email.")
+	err := simplesms.CheckProvider(provider)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	phoneInt, err := strconv.Atoi(phone)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	today := time.Now().Format("01-02-2006")
@@ -98,24 +106,13 @@ func main() {
 		log.Fatalf("Failed to get menu: %s\n", err)
 	}
 	log.Printf("THE MESSAGE:\n%s", menuString)
-	send(apikey, email, menuString)
 
-}
-
-func send(pass string, email string, body string) {
-	from := "stockbauer@gmail.com"
-	msg := "From: " + from + "\n" +
-		"To: " + email + "\n" +
-		"Subject: today's menu\n\n" +
-		body
-
-	err := smtp.SendMail("smtp.gmail.com:587",
-		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
-		from, []string{email}, []byte(msg))
-
+	emailClient := simplesms.NewClient("stockbauer@gmail.com", apikey, "smtp.gmail.com", "587")
+	err = emailClient.Send(phoneInt, provider, "today's menu", menuString)
 	if err != nil {
-		log.Fatalf("smtp error: %s", err)
+		log.Fatalf("failed to send email: %s", err)
 	}
+
 }
 
 func getMenu(dateString string) (string, error) {
