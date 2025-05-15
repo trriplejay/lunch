@@ -150,21 +150,15 @@ func getMenu(dateString string) (string, error) {
 
 func parseMenu(menu Menu) string {
 
-	breakfastString := "Breakfast:\n"
 	lunchString := "Lunch:\n"
 	for _, value := range menu.MenuSchedules[0].MenuBlocks {
-		if value.BlockName == "Breakfast" {
-			for _, bf := range value.CafeteriaLineList.Data[0].FoodItemList.Data {
-				breakfastString += bf.ItemName + "\n"
-			}
-
-		} else if value.BlockName == "Lunch" {
+		if value.BlockName == "Lunch" {
 			for _, bf := range value.CafeteriaLineList.Data[0].FoodItemList.Data {
 				lunchString += bf.ItemName + "\n"
 			}
 		}
 	}
 
-	return fmt.Sprintf("\n\n%s\n%s", breakfastString, lunchString)
+	return fmt.Sprintf("\n\n%s", lunchString)
 
 }
