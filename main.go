@@ -158,7 +158,9 @@ func parseMenu(menu Menu) string {
 			}
 		}
 	}
-
+	if len(lunchString) < 10 {
+		lunchString = "no data found"
+	}
 	return fmt.Sprintf("\n\n%s", lunchString)
 
 }
